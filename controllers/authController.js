@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-import userModel from "../models/userModel.js";
+//import userModel from "../models/userModel.js";
 import {getUser, createUser} from "../services/authService.js";
 
 export const registerController = asyncHandler(async (req, res, next) => {

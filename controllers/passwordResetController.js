@@ -1,9 +1,10 @@
 import asyncHandler from "express-async-handler";
 //import bcrypt from "bcrypt";
-import crypto from "crypto";
+//import crypto from "crypto";
 import userModel from "../models/userModel.js"; 
 import Token from '../models/token.js';
-
+import { getUser, getUserById, saveUser } from "../services/authService.js";
+import { getToken, createToken} from "../services/tokenService.js";
 
 export const requestResetPwd = asyncHandler(async (req, res, next) => {
     const email = req.body.email;
@@ -12,22 +13,18 @@ export const requestResetPwd = asyncHandler(async (req, res, next) => {
         res.status(400);
         throw new Error("Please provide email");
     }
-    const user = await userModel.findOne({email});
+    const user = await getUser({email});
     if(!user){
         res.status(400);
         throw new Error("User doesn't exist.Please provide correct email.");
     }
     try {
-        let token = await Token.findOne({ userId: user._id });
+        let token = await getToken({ userId: user._id });
 
-        if (!token) {
-            const tokenData = {
-                userId: user._id,
-                token: crypto.randomBytes(32).toString("hex"),
-            };
-            token = await Token.create(tokenData);
+        if (!token) {            
+            token = await createToken(user._id);
         }
-        const link = `${process.env.BASE_URL}/password-reset/${user._id}/${token.token}`;
+        const link = `${process.env.BASE_URL}/v1/password-reset/${user._id}/${token.token}`;
         res.status(201).send({
             success: true,
             message: "password reset link sent to your email account",
@@ -56,24 +53,31 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     }
 
     try {
-        const user = await userModel.findById(req.params.userId);        
+        //const user = await userModel.findById(req.params.userId);
+        let user = await getUserById(req.params.userId); 
+        
         if(!user){
             res.status(400);
             throw new Error("invalid link or expired");
         }
-        const userToken = await Token.findOne({
+        let userToken = await getToken({
             userId: user._id,
             token: req.params.token,
         });
-
+        
         if(!userToken){
             res.status(400);
             throw new Error("invalid link or expired");
         }
-
-        user.password = req.body.password;
+        //console.log(req.body.password);
+        /*user.password = req.body.password;
+        await user.save();*/
+        user = await saveUser(user, {password: req.body.password});
+        console.log(userToken);
+        await userToken.remove();
+        /*user.password = req.body.password;
         await user.save();
-        await userToken.delete();
+        await userToken.delete();*/
 
         res.status(201).send({
             success: true,
