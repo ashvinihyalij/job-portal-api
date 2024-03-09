@@ -1,34 +1,27 @@
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-//import userModel from "../models/userModel.js";
 import {getUser, createUser} from "../../services/userService.js";
+import { validateUserData } from '../../utils/validation/validateUser.js';
 
 export const registerController = asyncHandler(async (req, res, next) => {
     const params = req.body;
-    const {name, email, password} = req.body;
-    //validate
-    if(!name){
+    const {email, password} = req.body;
+    const { error } = validateUserData(req.body);
+
+    if (error) {
         res.status(400);
-        throw new Error("Please provide name");
-    }
-    if(!email){        
-        res.status(400);
-        throw new Error("Please provide email");
-    }
-    if(!password){
-        res.status(400);
-        throw new Error("Please provide password");
+        throw new Error(error.details[0].message);
     }
     const existingUser = await getUser({email});
-    if(existingUser){        
-        res.status(400);        
+    if(existingUser){
+        res.status(400);
         throw new Error("User is already registered. Please login");
     }
     try {
         // Hash password
         const hashedPassword = await createHash(password);
         params.hashedPassword = hashedPassword;
-           
+
         const userObject = await createUser(params);
         res.status(201).send({
             success: true,

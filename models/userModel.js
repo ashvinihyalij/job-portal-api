@@ -5,26 +5,19 @@ const userSchema = new mongoose.Schema(
     {
         name: {
             type: String,
-            required: [true, 'Name is required']
+            required: true
         },
         lastName: {
-            type: String,
-            
+            type: String            
         },
         email: {
             type: String,
-            required: [true, 'Email is required'],
-            unique: true,
-            //validate: validator.isEmail
-            validate: {
-                validator: validator.isEmail,
-                message: props => `${props.value} is not a valid email address!`
-            }
+            required: true,
+            unique: true,            
         },
         password: {
             type: String,
-            required: [true, 'Password is required'],
-            minlength: [6, 'Password should be more than 6 characters']
+            required: true            
         },
         location: {
             type: String,
