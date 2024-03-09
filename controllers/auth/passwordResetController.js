@@ -1,10 +1,6 @@
 import asyncHandler from "express-async-handler";
-//import bcrypt from "bcrypt";
-//import crypto from "crypto";
-import userModel from "../models/userModel.js"; 
-import Token from '../models/token.js';
-import { getUser, getUserById, saveUser } from "../services/authService.js";
-import { getToken, createToken} from "../services/tokenService.js";
+import { getUser, getUserById, saveUser } from "../../services/userService.js";
+import { getToken, createToken} from "../../services/tokenService.js";
 
 export const requestResetPwd = asyncHandler(async (req, res, next) => {
     const email = req.body.email;

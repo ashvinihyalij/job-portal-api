@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import setupMorgan from './utils/morgan/index.js';
 // File imports
-import connectDb from './utils/mongoose/index.js'; // In module js need to add file extension otherwise it shows error
+import connectDb from './config/index.js'; // In module js need to add file extension otherwise it shows error
 import testRoutes from './routes/testRoutes.js';
 import errorHandler from './middelwares/errorHandler.js';
 import setupRoutes from './routes/index.js';
