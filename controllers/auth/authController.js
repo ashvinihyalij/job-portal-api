@@ -1,12 +1,11 @@
 import asyncHandler from "express-async-handler";
-import bcrypt from "bcrypt";
 import {getUser, createUser} from "../../services/userService.js";
 import { validateUserData } from '../../utils/validation/validateUser.js';
 import logger from '../../utils/winston/index.js';
 
 export const registerController = asyncHandler(async (req, res, next) => {
     const params = req.body;
-    const {email, password} = req.body;
+    const email = req.body.email;
     const { error } = validateUserData(req.body);
 
     if (error) {
@@ -19,10 +18,6 @@ export const registerController = asyncHandler(async (req, res, next) => {
         throw new Error("User is already registered. Please login");
     }
     try {
-        // Hash password
-        const hashedPassword = await createHash(password);
-        params.hashedPassword = hashedPassword;
-
         const userObject = await createUser(params);
         res.status(201).send({
             success: true,
@@ -33,7 +28,3 @@ export const registerController = asyncHandler(async (req, res, next) => {
         logger.error(`Error in registerController: ${error}`);
     }
 });
-
-const createHash = async (password)  => {
-    return await bcrypt.hash(password, 10);
-}

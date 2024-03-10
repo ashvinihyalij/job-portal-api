@@ -54,7 +54,7 @@ const createUserObject = (params) => {
     const user = new userModel({
         name: params.name,
         email: params.email,
-        password: params.hashedPassword,
+        password: params.password,
         active: true
     });
     return user;
