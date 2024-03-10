@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import {getUser, createUser} from "../../services/userService.js";
 import { validateUserData } from '../../utils/validation/validateUser.js';
+import logger from '../../utils/winston/index.js';
 
 export const registerController = asyncHandler(async (req, res, next) => {
     const params = req.body;
@@ -29,16 +30,7 @@ export const registerController = asyncHandler(async (req, res, next) => {
             user: { "_id": userObject.id, "email": userObject.email }
         });
     } catch (error) {
-        // Check if the error is a validation error
-        if (error.name === 'ValidationError') {
-            // Extract error messages from validation errors
-            const errorMessages = Object.values(error.errors).map(error => error.message);
-            res.status(400);
-            throw new Error(errorMessages.join('. '));
-        } else {
-            // For other types of errors, pass them to the global error handler
-            next(error);
-        }
+        logger.error(`Error in registerController: ${error}`);
     }
 });
 

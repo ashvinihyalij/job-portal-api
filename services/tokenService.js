@@ -1,11 +1,12 @@
 import Token from '../models/token.js';
 import crypto from "crypto";
+import logger from '../utils/winston/index.js';
 
 export const getToken = async (objectParams) => {
     try {
         return await Token.findOne(objectParams);
     } catch (error) {
-        console.error("Error in getUser:", error);
+        logger.error(`Error in getUser: ${error}`);
     }
 };
 
@@ -17,6 +18,6 @@ export const createToken = async (userId) => {
         };
         return await Token.create(tokenData);
     } catch (error) {
-        console.error("Error in createToken:", error);
+        logger.error(`Error in createToken: ${error}`);
     }
 };

@@ -3,16 +3,17 @@ import { getUser, getUserById, saveUser } from "../../services/userService.js";
 import { getToken, createToken} from "../../services/tokenService.js";
 import { validateResetPwdData } from "../../utils/validation/validateUser.js";
 import { handleValidationError, handleSuccessResponse } from "../../utils/apiResponse.js";
+import logger from '../../utils/winston/index.js';
 
 export const requestResetPwd = asyncHandler(async (req, res, next) => {
-    const email = req.body.email;    
+    const email = req.body.email;
     const { error } = validateResetPwdData(req.body);
     if(error) {
         handleValidationError(res, error.details[0].message);
     }
 
     const user = await getUser({email});
-    if(!user){        
+    if(!user){
         handleValidationError(
             res,
             "User doesn't exist.Please provide correct email."
@@ -31,8 +32,8 @@ export const requestResetPwd = asyncHandler(async (req, res, next) => {
             "password reset link sent to your email account",
             { "_id": user.id, "token": token.token, "link": link }
         );
-    } catch (error) {        
-        console.log(error);        
+    } catch (error) {
+        logger.error(`Error while requesting password reset ${error}`);
     }
 });
 
@@ -65,9 +66,9 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
         
         handleSuccessResponse(
             res,
-            "Password set successfully"            
+            "Password set successfully"
         );
     } catch (error) {
-        console.log(error);
+        logger.error(`Error while password reset ${error}`);
     }
 });

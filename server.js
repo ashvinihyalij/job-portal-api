@@ -7,6 +7,7 @@ import setupMorgan from './utils/morgan/index.js';
 import connectDb from './config/index.js'; // In module js need to add file extension otherwise it shows error
 import testRoutes from './routes/testRoutes.js';
 import errorHandler from './middelwares/errorHandler.js';
+import logger from './utils/winston/index.js';
 import setupRoutes from './routes/index.js';
 //Dot env config
 dotenv.config();
@@ -28,5 +29,5 @@ app.use(errorHandler);
 //port
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Node server is running in ${process.env.DEV_MODE} mode on port ${PORT}`);
+    logger.log('info',`Node server is running in ${process.env.DEV_MODE} mode on port ${PORT}`);
 });
