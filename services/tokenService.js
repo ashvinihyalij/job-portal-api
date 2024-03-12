@@ -21,3 +21,11 @@ export const createToken = async (userId) => {
         logger.error(`Error in createToken: ${error}`);
     }
 };
+
+export const deleteToken = async (id) => {
+    try {
+        await Token.deleteOne({ _id: id });
+    } catch (error) {
+        logger.error(`Error in removeToken: ${error}`);
+    }
+};

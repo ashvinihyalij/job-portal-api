@@ -55,7 +55,8 @@ const createUserObject = (params) => {
         name: params.name,
         email: params.email,
         password: params.password,
-        active: true
+        active: false,
+        emailVerified: false
     });
     return user;
 }
