@@ -30,10 +30,14 @@ export const requestResetPwd = asyncHandler(async (req, res, next) => {
         handleSuccessResponse(
             res,
             "password reset link sent to your email account",
-            { "_id": user.id, "token": token.token, "link": link }
+            [{ "_id": user.id, "token": token.token, "link": link }]
         );
     } catch (error) {
         logger.error(`Error while requesting password reset ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 });
 
@@ -59,10 +63,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
             );
         }        
         user = await saveUser(user, {password: req.body.password});
-        //await userToken.remove();
-        /*user.password = req.body.password;
-        await user.save();
-        await userToken.delete();*/
+        await deleteToken(user._id);
         
         handleSuccessResponse(
             res,
@@ -70,5 +71,9 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
         );
     } catch (error) {
         logger.error(`Error while password reset ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 });

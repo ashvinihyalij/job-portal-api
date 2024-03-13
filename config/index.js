@@ -1,12 +1,6 @@
-import mongoose from 'mongoose';
-import logger from '../utils/winston/index.js';
-const connectDb = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URL);
-        logger.info(`Connected to mongo db database ${mongoose.connection.host}`)
-    } catch (error) {
-        logger.error(`MongoDb errors ${error}`);
-    }
-}
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export default connectDb;
+const { PORT, DEV_MODE, MONGO_URL, BASE_URL, BCRYPT_SALT, SECRET_ACCESS_TOKEN } = process.env;
+
+export { PORT, DEV_MODE, MONGO_URL, BASE_URL, BCRYPT_SALT, SECRET_ACCESS_TOKEN };

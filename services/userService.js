@@ -1,19 +1,28 @@
 import userModel from "../models/userModel.js";
 import logger from '../utils/winston/index.js';
-
-export const getUserById = async (userId) => {
+import { handleErrorResponse } from "../utils/apiResponse.js";
+export const getUserById = async (userId, password = false) => {
     try {
+        if(password)
+            return await userModel.findById(userId).select('+password');
         return await userModel.findById(userId);
     } catch (error) {
         logger.error(`Error in getUserById: ${error}`);
     }
 };
 
-export const getUser = async (objectParams) => {
+export const getUser = async (objectParams, password = false) => {
     try {
+        if(password)
+            return await userModel.findOne(objectParams).select('+password');
+        
         return await userModel.findOne(objectParams);
     } catch (error) {
         logger.error(`Error in getUser: ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 };
 
@@ -23,6 +32,10 @@ export const createUser = async (params) => {
         return await userObject.save();
     } catch (error) {
         logger.error(`Error in createUser: ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 };
 
@@ -31,6 +44,10 @@ export const updateUser = async (userId, params) => {
         return await userModel.findByIdAndUpdate(userId, params);
     } catch (error) {
         logger.error(`Error in updateUser: ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 };
 
@@ -47,6 +64,10 @@ export const saveUser = async (user, params) => {
         return await user.save();
     } catch (error) {
         logger.error(`Error in saveUser: ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 };
 

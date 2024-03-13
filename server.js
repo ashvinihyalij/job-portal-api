@@ -4,13 +4,15 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import setupMorgan from './utils/morgan/index.js';
 // File imports
-import connectDb from './config/index.js'; // In module js need to add file extension otherwise it shows error
+import connectDb from './config/mongoose.js'; // In module js need to add file extension otherwise it shows error
 import testRoutes from './routes/testRoutes.js';
 import errorHandler from './middelwares/errorHandler.js';
 import logger from './utils/winston/index.js';
 import setupRoutes from './routes/index.js';
+import { PORT } from "./config/index.js";
+
 //Dot env config
-dotenv.config();
+//dotenv.config();
 
 // Mongo DB connection
 connectDb();
@@ -26,8 +28,7 @@ setupMorgan(app);
 app.use('/api/v1/test', testRoutes);
 setupRoutes(app);
 app.use(errorHandler);
-//port
-const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
     logger.log('info',`Node server is running in ${process.env.DEV_MODE} mode on port ${PORT}`);
 });

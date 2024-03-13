@@ -14,11 +14,12 @@ const userSchema = new mongoose.Schema(
         email: {
             type: String,
             required: true,
-            unique: true,            
+            unique: true
         },
         password: {
             type: String,
-            required: true            
+            required: true,
+            select: false
         },
         location: {
             type: String,
@@ -31,6 +32,11 @@ const userSchema = new mongoose.Schema(
         emailVerified: {
             type: Boolean,
             default: false,
+        },
+        role: {
+            type: String,
+            required: true,
+            default: "msp",
         },
     },
     {timestamps: true}
