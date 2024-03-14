@@ -1,15 +1,15 @@
 import asyncHandler from "express-async-handler";
-import {getUser, getUserById, saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
+import { saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
 import { getToken, createToken, deleteToken} from "../../services/tokenService.js";
 import { validateUserData } from '../../utils/validation/validateUser.js';
+import logger from '../../utils/winston/index.js';
+import userModel from "../../models/userModel.js";
+import { BASE_URL } from "../../config/index.js";
 import {
             handleValidationError,
             handleSuccessResponse,
             handleErrorResponse
         } from "../../utils/apiResponse.js";
-import logger from '../../utils/winston/index.js';
-import userModel from "../../models/userModel.js";
-import { BASE_URL } from "../../config/index.js";
 
 export const register = asyncHandler(async (req, res, next) => {
     const params = req.body;
@@ -25,8 +25,7 @@ export const register = asyncHandler(async (req, res, next) => {
     if(existingUser){
         handleValidationError(res, "It seems you already have an account, please login instead.");
     }
-    try {
-        //const userObject = await createUser(params);
+    try {        
         const userObject = await userModel.createUser(params);
         let token = await createToken(userObject._id);
         const link = `${BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;        
@@ -46,8 +45,7 @@ export const register = asyncHandler(async (req, res, next) => {
 
 export const verifyEmail = asyncHandler(async (req, res, next) => {
     try {
-        let user = await getUserById(req.params.userId); 
-
+        let user = await userModel.findUserById(req.params.userId);
         if(!user){
             handleValidationError(
                 res,

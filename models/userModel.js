@@ -63,4 +63,11 @@ userSchema.statics.createUser = async function(params) {
     return user;
 };
 
+userSchema.statics.findUserById = async function(userId, password = false) {
+    if(password) {
+        return await this.findById(userId).select('+password');
+    }
+    return await this.findById(userId);
+};
+
 export default mongoose.model('User', userSchema);
