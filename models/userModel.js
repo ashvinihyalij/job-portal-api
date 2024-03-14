@@ -49,4 +49,12 @@ userSchema.pre("save", async function (next) {
     this.password = hash;
     next();
 });
+
+userSchema.statics.findUser = async function(condition, password = false) {
+    if(password) {
+        return this.findOne(condition).select('+password').exec();
+    }
+    return this.findOne(condition).select('-password').exec();
+};
+
 export default mongoose.model('User', userSchema);

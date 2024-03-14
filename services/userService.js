@@ -1,6 +1,7 @@
 import userModel from "../models/userModel.js";
 import logger from '../utils/winston/index.js';
 import { handleErrorResponse } from "../utils/apiResponse.js";
+import bcrypt from "bcrypt"
 export const getUserById = async (userId, password = false) => {
     try {
         if(password)
@@ -71,6 +72,14 @@ export const saveUser = async (user, params) => {
     }
 };
 
+export const findUserByEmail = async (email) => {
+    return await userModel.findUser({email}, true);
+};
+
+export const verifyPassword = async (userPassword, hashedPassword) => {
+    return await bcrypt.compare(userPassword, hashedPassword);
+}
+  
 const createUserObject = (params) => {
     const user = new userModel({
         name: params.name,

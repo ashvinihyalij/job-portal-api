@@ -1,13 +1,15 @@
 import asyncHandler from "express-async-handler";
-import {getUser, getUserById, createUser, saveUser} from "../../services/userService.js";
+import {getUser, getUserById, createUser, saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
 import { getToken, createToken, deleteToken} from "../../services/tokenService.js";
 import { validateUserData } from '../../utils/validation/validateUser.js';
 import {
             handleValidationError,
             handleSuccessResponse,
-            handleErrorResponse 
+            handleErrorResponse
         } from "../../utils/apiResponse.js";
 import logger from '../../utils/winston/index.js';
+//import userModel from "../../models/userModel.js";
+
 
 export const register = asyncHandler(async (req, res, next) => {
     const params = req.body;
@@ -19,11 +21,11 @@ export const register = asyncHandler(async (req, res, next) => {
     }
     const existingUser = await getUser({email});
     
-    if(existingUser){        
+    if(existingUser){
         handleValidationError(res, "It seems you already have an account, please login instead.");
     }
     try {
-        const userObject = await createUser(params);        
+        const userObject = await createUser(params);
         let token = await createToken(userObject._id);
         const link = `${process.env.BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;        
         handleSuccessResponse(
@@ -85,43 +87,39 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 
 /**
  * @route POST v1/auth/login
+ * @url http://localhost:8080/api/v1/auth/login
  * @desc logs in a user
  * @access Public
  */
-export const login = asyncHandler(async (req, res, next) => {
-    //console.log('ash');
-    //const { email } = req.body;
-    //console.log(req.body);
-    //try {
-        // Check if user exists
-        //const user = await getUser({email});
-        //console.log(user);
-        // return user info except password
-        /*const { password, ...user_data } = user._doc;
-        if(!user.active){
-            handleErrorResponse(
+export const login = asyncHandler(async (req, res) => {
+    try {
+        const { email, password: userPassword } = req.body;
+        
+        const user = await findUserByEmail(email);
+        if (!user || !user.active || !user.emailVerified) {
+            return handleErrorResponse(
                 res,
-                "Your account is inactive.",
+                "Please ensure your account is active and your email is verified. Invalid credentials.",
                 401
             );
         }
-        if(!user.emailVerified){
-            handleValidationError(
+        const isPasswordValid = await verifyPassword(userPassword, user.password);
+        if (!isPasswordValid) {
+            return handleErrorResponse(
                 res,
-                "Your email is not verified yet.",
+                "Invalid email or password. Please try again.",
                 401
             );
-        }*/
-        /*handleSuccessResponse(
+        }
+
+        const { password, ...user_data } = user._doc;
+        handleSuccessResponse(
             res,
             "You have successfully logged in.",
             [user_data]
-        );*/
-    /*} catch (error) {
-        logger.error(`Error while login ${error}`);
-        handleErrorResponse(
-            res,
-            "Internal Server Error"
         );
-    }*/
+    } catch (error) {
+        logger.error(`Error while login ${error}`);
+        handleErrorResponse(res, "Internal Server Error");
+    }
 });
