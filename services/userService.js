@@ -27,7 +27,7 @@ export const getUser = async (objectParams, password = false) => {
     }
 };
 
-export const createUser = async (params) => {
+/*export const createUser = async (params) => {
     try {
         const userObject = createUserObject(params);
         return await userObject.save();
@@ -38,7 +38,7 @@ export const createUser = async (params) => {
             "Internal Server Error"
         );
     }
-};
+};*/
 
 export const updateUser = async (userId, params) => {
     try {
@@ -72,8 +72,8 @@ export const saveUser = async (user, params) => {
     }
 };
 
-export const findUserByEmail = async (email) => {
-    return await userModel.findUser({email}, true);
+export const findUserByEmail = async (email, password = false) => {    
+    return await userModel.findUser({email}, password);
 };
 
 export const verifyPassword = async (userPassword, hashedPassword) => {

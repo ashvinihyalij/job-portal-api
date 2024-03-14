@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import {getUser, getUserById, createUser, saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
+import {getUser, getUserById, saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
 import { getToken, createToken, deleteToken} from "../../services/tokenService.js";
 import { validateUserData } from '../../utils/validation/validateUser.js';
 import {
@@ -8,8 +8,8 @@ import {
             handleErrorResponse
         } from "../../utils/apiResponse.js";
 import logger from '../../utils/winston/index.js';
-//import userModel from "../../models/userModel.js";
-
+import userModel from "../../models/userModel.js";
+import { BASE_URL } from "../../config/index.js";
 
 export const register = asyncHandler(async (req, res, next) => {
     const params = req.body;
@@ -19,15 +19,17 @@ export const register = asyncHandler(async (req, res, next) => {
     if (error) {
         handleValidationError(res, error.details[0].message);
     }
-    const existingUser = await getUser({email});
-    
+
+    const existingUser = await findUserByEmail(email);
+
     if(existingUser){
         handleValidationError(res, "It seems you already have an account, please login instead.");
     }
     try {
-        const userObject = await createUser(params);
+        //const userObject = await createUser(params);
+        const userObject = await userModel.createUser(params);
         let token = await createToken(userObject._id);
-        const link = `${process.env.BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;        
+        const link = `${BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;        
         handleSuccessResponse(
             res,
             "Thank you for registering with us. Your account has been successfully created.",            
@@ -95,7 +97,7 @@ export const login = asyncHandler(async (req, res) => {
     try {
         const { email, password: userPassword } = req.body;
         
-        const user = await findUserByEmail(email);
+        const user = await findUserByEmail(email, true);
         if (!user || !user.active || !user.emailVerified) {
             return handleErrorResponse(
                 res,
