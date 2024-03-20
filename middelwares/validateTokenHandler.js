@@ -41,3 +41,26 @@ export const verify = asyncHandler(async(req, res, next) => {
         );
     }
 });
+
+export const verifyRole = asyncHandler(async(req, res, next) => {
+    try {
+        const user = req.user; // we have access to the user object from the request
+        const { role } = user; // extract the user role
+        // check if user has no advance privileges
+        // return an unathorized response
+        if (role !== "msp") {
+            return handleErrorResponse(
+                res,
+                "You are not authorized to view this page.",
+                401
+            );
+        }
+        next(); // continue to the next middleware or function
+    } catch (err) {
+        logger.error(`Error in registerController: ${err}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});
