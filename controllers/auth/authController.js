@@ -113,6 +113,15 @@ export const login = asyncHandler(async (req, res) => {
         }
 
         const { password, ...user_data } = user._doc;
+        /*let options = {
+            maxAge: 20 * 60 * 1000, // would expire in 20minutes
+            httpOnly: true, // The cookie is only accessible by the web server
+            secure: true,
+            sameSite: "None",
+        };*/
+        const token = user.generateAccessJWT(); // generate session token for user
+        //res.cookie("SessionID", token); // set the token to response header, so that the client sends it back on each subsequent request
+        user_data.token = token;
         handleSuccessResponse(
             res,
             "You have successfully logged in.",

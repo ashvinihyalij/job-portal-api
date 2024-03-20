@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-const bcryptSalt = process.env.BCRYPT_SALT;
+//const bcryptSalt = process.env.BCRYPT_SALT;
+import jwt from 'jsonwebtoken';
+import { SECRET_ACCESS_TOKEN, BCRYPT_SALT } from '../config/index.js';
 // schema
 const userSchema = new mongoose.Schema(
     {
@@ -45,7 +47,7 @@ userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         return next();
     }
-    const hash = await bcrypt.hash(this.password, Number(bcryptSalt));
+    const hash = await bcrypt.hash(this.password, Number(BCRYPT_SALT));
     this.password = hash;
     next();
 });
@@ -68,6 +70,16 @@ userSchema.statics.findUserById = async function(userId, password = false) {
         return await this.findById(userId).select('+password');
     }
     return await this.findById(userId);
+};
+
+userSchema.methods.generateAccessJWT = function () {
+    let payload = {
+        id: this._id,
+    };
+    
+    return jwt.sign(payload, SECRET_ACCESS_TOKEN, {
+        expiresIn: '60m',
+    });
 };
 
 export default mongoose.model('User', userSchema);
