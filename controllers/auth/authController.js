@@ -1,38 +1,46 @@
 import asyncHandler from "express-async-handler";
-import { saveUser, findUserByEmail, verifyPassword} from "../../services/userService.js";
+import { saveUser, verifyPassword} from "../../services/userService.js";
 import { getToken, createToken, deleteToken} from "../../services/tokenService.js";
-import { validateUserData } from '../../utils/validation/validateUser.js';
+import { validateUserData, validateLoginData } from '../../utils/validation/validateUser.js';
 import logger from '../../utils/winston/index.js';
 import userModel from "../../models/userModel.js";
 import { BASE_URL } from "../../config/index.js";
+import { makeObjectSelected } from '../../utils/common.js';
 import {
             handleValidationError,
             handleSuccessResponse,
             handleErrorResponse
         } from "../../utils/apiResponse.js";
 
+/**
+ * @route POST v1/auth/register
+ * @url http://localhost:8080/api/v1/auth/register
+ * @desc registers a user
+ * @access Public
+ */
 export const register = asyncHandler(async (req, res, next) => {
-    const params = req.body;
-    const email = req.body.email;
-    const { error } = validateUserData(req.body);
-
+    const params = req.body;    
+    const { error } = validateUserData(params);
     if (error) {
         handleValidationError(res, error.details[0].message);
     }
 
-    const existingUser = await findUserByEmail(email);
-
+    const existingUser = await userModel.findUser({email:req.body.email});
     if(existingUser){
         handleValidationError(res, "It seems you already have an account, please login instead.");
     }
-    try {        
-        const userObject = await userModel.createUser(params);
+
+    try {
+        const userObject = await userModel.createUser(params);        
         let token = await createToken(userObject._id);
-        const link = `${BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;        
+        const link = `${BASE_URL}/v1/auth/verify/${userObject._id}/${token.token}`;
+        let userData = makeObjectSelected(userObject, ['_id', 'firstName', 'lastName', 'email', 'role', 'isActive']);
+        userData.link = link;
+
         handleSuccessResponse(
             res,
             "Thank you for registering with us. Your account has been successfully created.",            
-            [{"_id": userObject.id, "email": userObject.email, "emailVerificationLink": link }]
+            [userData]
         );
     } catch (error) {
         logger.error(`Error in registerController: ${error}`);
@@ -43,6 +51,12 @@ export const register = asyncHandler(async (req, res, next) => {
     }
 });
 
+/**
+ * @route GET v1/auth/verify/{token}
+ * @url http://localhost:8080/api/v1/auth/verify/{token}
+ * @desc verifies email
+ * @access Public
+ */
 export const verifyEmail = asyncHandler(async (req, res, next) => {
     try {
         let user = await userModel.findUserById(req.params.userId);
@@ -67,7 +81,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
             user,
             {
                 emailVerified: true,
-                active: true
+                isActive: true
             }
         );
         await deleteToken(userToken._id);
@@ -93,10 +107,19 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
  */
 export const login = asyncHandler(async (req, res) => {
     try {
+        const { error } = validateLoginData(req.body);
+
+        if (error) {
+            return handleErrorResponse(
+                res,
+                "Invalid credentials",
+                400
+            );
+        }
         const { email, password: userPassword } = req.body;
-        
-        const user = await findUserByEmail(email, true);
-        if (!user || !user.active || !user.emailVerified) {
+        const user = await userModel.findUser({email}, true);
+    
+        if (!user || !user.isActive || !user.emailVerified) {
             return handleErrorResponse(
                 res,
                 "Please ensure your account is active and your email is verified. Invalid credentials.",
@@ -113,14 +136,8 @@ export const login = asyncHandler(async (req, res) => {
         }
 
         const { password, ...user_data } = user._doc;
-        /*let options = {
-            maxAge: 20 * 60 * 1000, // would expire in 20minutes
-            httpOnly: true, // The cookie is only accessible by the web server
-            secure: true,
-            sameSite: "None",
-        };*/
-        const token = user.generateAccessJWT(); // generate session token for user
-        //res.cookie("SessionID", token); // set the token to response header, so that the client sends it back on each subsequent request
+        
+        const token = user.generateAccessJWT(); // generate session token for user        
         user_data.token = token;
         handleSuccessResponse(
             res,

@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-//const bcryptSalt = process.env.BCRYPT_SALT;
 import jwt from 'jsonwebtoken';
 import { SECRET_ACCESS_TOKEN, BCRYPT_SALT } from '../config/index.js';
+
 // schema
 const userSchema = new mongoose.Schema(
     {
-        name: {
+        firstName: {
             type: String,
             required: true
         },
@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
         email: {
             type: String,
             required: true,
+            lowercase: true,
             unique: true
         },
         password: {
@@ -23,11 +24,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false
         },
-        location: {
+        phoneNumber: {
             type: String,
-            default: 'mumbai'
+            default: ''
         },
-        active: {
+        isActive: {
             type: Boolean,
             default: false
         },
@@ -40,6 +41,15 @@ const userSchema = new mongoose.Schema(
             required: true,
             default: "msp",
         },
+        roleStatus: {
+            type: Number,
+            enum: [1, 2],
+            default: 2
+        },
+        about: {
+            type: String,
+            default: ''
+        }
     },
     {timestamps: true}
 );
@@ -61,8 +71,12 @@ userSchema.statics.findUser = async function(condition, password = false) {
 
 userSchema.statics.createUser = async function(params) {
     const user = new this(params);
-    await user.save();
-    return user;
+    try {
+        // This is automatically wrapped in a Promise because the function is async
+        return await user.save();        
+    } catch (error) {
+        throw error; // This will cause the promise to be rejected with the thrown error
+    }
 };
 
 userSchema.statics.findUserById = async function(userId, password = false) {
@@ -78,7 +92,7 @@ userSchema.methods.generateAccessJWT = function () {
     };
     
     return jwt.sign(payload, SECRET_ACCESS_TOKEN, {
-        expiresIn: '60m',
+        expiresIn: '20m',
     });
 };
 

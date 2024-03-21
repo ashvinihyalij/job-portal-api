@@ -27,6 +27,7 @@ export const getUser = async (objectParams, password = false) => {
     }
 };
 
+
 /*export const createUser = async (params) => {
     try {
         const userObject = createUserObject(params);
@@ -80,7 +81,7 @@ export const verifyPassword = async (userPassword, hashedPassword) => {
     return await bcrypt.compare(userPassword, hashedPassword);
 }
   
-const createUserObject = (params) => {
+/*const createUserObject = (params) => {
     const user = new userModel({
         name: params.name,
         email: params.email,
@@ -89,4 +90,4 @@ const createUserObject = (params) => {
         emailVerified: false
     });
     return user;
-}
+}*/
