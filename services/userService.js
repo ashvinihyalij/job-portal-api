@@ -2,7 +2,7 @@ import userModel from "../models/userModel.js";
 import logger from '../utils/winston/index.js';
 import { handleErrorResponse } from "../utils/apiResponse.js";
 import bcrypt from "bcrypt"
-export const getUserById = async (userId, password = false) => {
+/*export const getUserById = async (userId, password = false) => {
     try {
         if(password)
             return await userModel.findById(userId).select('+password');
@@ -10,9 +10,9 @@ export const getUserById = async (userId, password = false) => {
     } catch (error) {
         logger.error(`Error in getUserById: ${error}`);
     }
-};
+};*/
 
-export const getUser = async (objectParams, password = false) => {
+/*export const getUser = async (objectParams, password = false) => {
     try {
         if(password)
             return await userModel.findOne(objectParams).select('+password');
@@ -25,7 +25,7 @@ export const getUser = async (objectParams, password = false) => {
             "Internal Server Error"
         );
     }
-};
+};*/
 
 
 /*export const createUser = async (params) => {
@@ -73,9 +73,9 @@ export const saveUser = async (user, params) => {
     }
 };
 
-export const findUserByEmail = async (email, password = false) => {    
+/*export const findUserByEmail = async (email, password = false) => {    
     return await userModel.findUser({email}, password);
-};
+};*/
 
 export const verifyPassword = async (userPassword, hashedPassword) => {
     return await bcrypt.compare(userPassword, hashedPassword);

@@ -6,7 +6,7 @@ export const getToken = async (objectParams) => {
     try {
         return await Token.findOne(objectParams);
     } catch (error) {
-        logger.error(`Error in getUser: ${error}`);
+        logger.error(`Error in getToken: ${error}`);
     }
 };
 
