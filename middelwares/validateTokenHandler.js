@@ -29,7 +29,16 @@ export const verify = asyncHandler(async(req, res, next) => {
                     );
                 }
                 const { id } = decoded; // get user id from the decoded token                
-                req.user = await userModel.findUserById(id);
+                const user = await userModel.findUserById(id);
+                if (!user.isActive) {
+                    // if user is inactive in status, return an unauthorized error
+                    return handleErrorResponse(
+                        res,
+                        "User is not active. Please contact website administrator",
+                        401
+                    );
+                }
+                req.user = user;             
                 next();
             });
         }        
