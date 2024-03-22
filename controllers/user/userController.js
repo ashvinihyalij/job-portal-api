@@ -20,7 +20,7 @@ export const getProfile = asyncHandler(async (req, res, next) => {
             [userData]
         );
         } catch (error) {
-            logger.error(`Error in registerController: ${error}`);
+            logger.error(`Error in getProfile: ${error}`);
             handleErrorResponse(
                 res,
                 "Internal Server Error"
