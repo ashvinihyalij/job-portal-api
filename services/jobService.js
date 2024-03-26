@@ -1,6 +1,4 @@
 import JobTemplate from "../models/JobTemplate.js";
-import logger from '../utils/winston/index.js';
-import { handleErrorResponse } from "../utils/apiResponse.js";
 
 export const createTemplate = async (params) => {
     const templateObject = createTemplateObject(params);
@@ -13,8 +11,6 @@ export const createTemplate = async (params) => {
 
     // Return the populated JobTemplate object
     return populatedTemplate;
-    
-    
 };
 
 const createTemplateObject = (params) => {
