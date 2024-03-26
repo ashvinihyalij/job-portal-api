@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import asyncHandler from "express-async-handler";
 import {
     handleValidationError,
@@ -6,7 +7,7 @@ import {
 } from "../../utils/apiResponse.js";
 import { validateTemplateData } from '../../utils/validation/validateTemplate.js';
 import logger from '../../utils/winston/index.js';
-import { createTemplate } from '../../services/jobService.js'
+import { createTemplate, getTemplateById } from '../../services/jobService.js'
 import { makeObjectSelected } from '../../utils/common.js';
 /**
  * @route POST v1/job/template
@@ -48,10 +49,28 @@ export const editTemplate = asyncHandler(async (req, res, next) => {
 });
 
 export const getTemplate = asyncHandler(async (req, res, next) => {
+    const templateId = req.params.templateId;
+    if (!templateId || !mongoose.isValidObjectId(templateId)) {
+        return handleValidationError(res, 'Invalid or missing template ID');     
+    }
     try {
-        console.log('in get template controller');
+        const template = await getTemplateById(templateId);
+        if (!template) {            
+            return handleErrorResponse(res, 'Template not found', 404);
+        }
+        let templateData = makeObjectSelected(template, ['_id', 'title', 'subtitle', 'description', 'templateStatus', 'category', 'user']);
+        handleSuccessResponse(
+            res,
+            "Job Template retrieved successfully.",
+            [templateData]
+        );
+        
     } catch (error) {
-
+        logger.error(`Error in getTemplate: ${error}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
     }
 });
 

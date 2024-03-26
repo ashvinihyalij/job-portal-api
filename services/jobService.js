@@ -13,6 +13,15 @@ export const createTemplate = async (params) => {
     return populatedTemplate;
 };
 
+export const getTemplateById = async (templateId) => {
+    const template = await JobTemplate.findById(templateId)
+            .populate('category', 'title')
+            .populate('user', 'firstName lastName joined');
+
+    // Return the populated JobTemplate object
+    return template;
+};
+
 const createTemplateObject = (params) => {
     const template = new JobTemplate({
         title: params.title,
