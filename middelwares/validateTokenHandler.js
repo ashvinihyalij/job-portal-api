@@ -66,7 +66,30 @@ export const verifyRole = asyncHandler(async(req, res, next) => {
         }
         next(); // continue to the next middleware or function
     } catch (err) {
-        logger.error(`Error in registerController: ${err}`);
+        logger.error(`Error in verifyrole: ${err}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});
+
+export const verifyAdmin = asyncHandler(async(req, res, next) => {
+    try {
+        const user = req.user; // we have access to the user object from the request        
+        const { role, roleStatus } = user; // extract the user role
+        // check if user has no advance privileges
+        // return an unathorized response
+        if (role !== "msp" || roleStatus !== 1) {            
+            return handleErrorResponse(
+                res,
+                "Sorry, You'he no rights to perform this operation.",
+                401
+            );
+        }
+        next(); // continue to the next middleware or function
+    } catch (err) {
+        logger.error(`Error in verifyrole: ${err}`);
         handleErrorResponse(
             res,
             "Internal Server Error"

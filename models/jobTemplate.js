@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import jobCategory from "./jobCategoryModel.js";
 const jobTemplateSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -13,12 +13,12 @@ const jobTemplateSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  jobCategoryId: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'JobCategory',
     required: true,
   },
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,

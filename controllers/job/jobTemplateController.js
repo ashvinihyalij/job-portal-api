@@ -14,19 +14,20 @@ import { makeObjectSelected } from '../../utils/common.js';
  * @desc adds job template
  * @access Private
  */
-export const addTemplate = asyncHandler(async (req, res, next) => {    
-        const params = req.body;
+export const addTemplate = asyncHandler(async (req, res, next) => {        
+        let params = req.body;
         const { error } = validateTemplateData(params);        
         if (error) {
             handleValidationError(res, error.details[0].message);
         }
 
     try {
+        params.user = req.user;
         const template = await createTemplate(params);
-        let templateData = makeObjectSelected(template, ['_id', 'title', 'subtitle', 'description', 'templateStatus']);
+        let templateData = makeObjectSelected(template, ['_id', 'title', 'subtitle', 'description', 'templateStatus', 'category', 'user']);
         handleSuccessResponse(
             res,
-            "Job template added successfully.",            
+            "Job template added successfully.",
             [templateData]
         );
     } catch (err) {

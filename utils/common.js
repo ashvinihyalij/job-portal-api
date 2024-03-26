@@ -14,5 +14,6 @@ export const makeObjectSelected = (obj, props) => {
     props.forEach(p => {
         newObj[p] = obj[p];
     });
+
     return newObj;
 }

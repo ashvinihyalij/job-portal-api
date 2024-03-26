@@ -1,18 +1,29 @@
-import jobTemplate from "../models/JobTemplate.js";
+import JobTemplate from "../models/JobTemplate.js";
 import logger from '../utils/winston/index.js';
 import { handleErrorResponse } from "../utils/apiResponse.js";
+
 export const createTemplate = async (params) => {
     const templateObject = createTemplateObject(params);
-    return await templateObject.save();
+    const savedTemplate = await templateObject.save();
+
+    // Populate the jobCategoryId and userId fields of the saved JobTemplate object
+    const populatedTemplate = await JobTemplate.findById(savedTemplate._id)
+    .populate('category', 'title')
+    .populate('user', 'firstName lastName joined');
+
+    // Return the populated JobTemplate object
+    return populatedTemplate;
+    
+    
 };
 
 const createTemplateObject = (params) => {
-    const template = new jobTemplate({
+    const template = new JobTemplate({
         title: params.title,
         subtitle: params.subtitle,
         description: params.description ?? null,
-        jobCategoryId: params.categoryId,
-        userId: '65fc2e9ec0e7f38a7880f52f',//params.user.id,
+        category: params.categoryId,
+        user: params.user.id,
         templateStatus: 1
     });
     return template;
