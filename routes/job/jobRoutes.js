@@ -36,8 +36,13 @@ router.delete('/template/:templateId', verify, verifyAdmin, jobTemplateControlle
  */
 router.get('/template/:templateId', verify, jobTemplateController.getTemplate);
 
-// Get all templates
-router.get('/template', jobTemplateController.getTemplates);
+/**
+ * @route GET v1/job/template?page=1&filter=laravel
+ * @url http://localhost:8080/api/v1/job/template?page=1&filter=laravel
+ * @desc Gets job templates
+ * @access Private => any logged in user
+ */
+router.get('/template', verify, jobTemplateController.getTemplates);
 
 
 export default router;

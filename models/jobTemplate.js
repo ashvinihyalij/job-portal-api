@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import jobCategory from "./jobCategoryModel.js";
+//import jobCategory from "./jobCategoryModel.js";
+import mongoosePaginate from 'mongoose-paginate-v2';
 const jobTemplateSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -26,7 +27,7 @@ const jobTemplateSchema = new mongoose.Schema({
   templateStatus: {
     type: String,
     required: true,
-    enum: [0, 1, 2], // 1 => 'active', 0 => 'inactive', 2 => 'archived'
+    enum: [0, 1], // 1 => 'active', 0 => 'inactive'
     default: 1,
   },
   is_deleted: {
@@ -34,6 +35,9 @@ const jobTemplateSchema = new mongoose.Schema({
     default: false,
   }
 }, { timestamps: true });
+
+// Apply the pagination plugin
+jobTemplateSchema.plugin(mongoosePaginate);
 
 // Middleware to automatically exclude soft deleted documents
 jobTemplateSchema.pre(/^find/, function(next) {

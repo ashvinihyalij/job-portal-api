@@ -10,7 +10,7 @@ export const validateTemplateData = (template) => {
             'string.hex': `"jobCategoryId" must be a hex string`,
             'any.required': `"jobCategoryId" is a required field`
         }),
-        status: Joi.number().valid(0, 1, 2).default(1)
+        status: Joi.number().valid(0, 1).default(1)
     });
     return templateSchema.validate(template);
 }
@@ -24,7 +24,7 @@ export const validateTemplateUpdateData = (template) => {
             'string.length': `"jobCategoryId" must be a 24-character hex string`,
             'string.hex': `"jobCategoryId" must be a hex string`,
         }),
-        status: Joi.number().valid(0, 1, 2)
+        status: Joi.number().valid(0, 1)
     }).min(1); // At least one field is required for update
 
     return templateSchema.validate(template);
