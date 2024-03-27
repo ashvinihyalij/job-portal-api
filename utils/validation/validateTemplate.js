@@ -14,3 +14,18 @@ export const validateTemplateData = (template) => {
     });
     return templateSchema.validate(template);
 }
+
+export const validateTemplateUpdateData = (template) => {
+    const templateSchema = Joi.object({
+        title: Joi.string().min(2).max(50),
+        subtitle: Joi.string().min(2).max(50),
+        description: Joi.string().max(500).allow('', null),
+        categoryId: Joi.string().length(24).hex().messages({
+            'string.length': `"jobCategoryId" must be a 24-character hex string`,
+            'string.hex': `"jobCategoryId" must be a hex string`,
+        }),
+        status: Joi.number().valid(0, 1, 2)
+    }).min(1); // At least one field is required for update
+
+    return templateSchema.validate(template);
+};

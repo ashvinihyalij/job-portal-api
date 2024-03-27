@@ -8,13 +8,13 @@ const router = express.Router();
 router.post('/template', verify, verifyAdmin, jobTemplateController.addTemplate);
 
 // Edit an existing template
-router.put('/template/:templateId', jobTemplateController.editTemplate);
+router.put('/template/:templateId', verify, verifyAdmin, jobTemplateController.editTemplate);
 
 // Delete a template
-router.delete('/template/:templateId', jobTemplateController.deleteTemplate);
+router.delete('/template/:templateId', verify, verifyAdmin, jobTemplateController.deleteTemplate);
 
 // Get a single template
-router.get('/template/:templateId', jobTemplateController.getTemplate);
+router.get('/template/:templateId', verify, jobTemplateController.getTemplate);
 
 // Get all templates
 router.get('/template', jobTemplateController.getTemplates);

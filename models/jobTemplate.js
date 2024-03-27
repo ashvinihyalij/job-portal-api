@@ -43,9 +43,9 @@ jobTemplateSchema.pre(/^find/, function(next) {
 });
 
 // Instance method for soft delete
-jobTemplateSchema.methods.softDelete = function(callback) {
+jobTemplateSchema.methods.softDelete = async function() {
   this.is_deleted = true;
-  this.save(callback);
+  await this.save();
 };
 
 export default mongoose.model('JobTemplate', jobTemplateSchema);
