@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-//import jobCategory from "./jobCategoryModel.js";
+import jobCategory from "./jobCategoryModel.js";
 import mongoosePaginate from 'mongoose-paginate-v2';
 const jobTemplateSchema = new mongoose.Schema({
   title: {

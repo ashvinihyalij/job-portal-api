@@ -35,7 +35,7 @@ export const addTemplate = asyncHandler(async (req, res, next) => {
 export const editTemplate = asyncHandler(async (req, res, next) => {
     const templateId = req.params.templateId;
     if (!templateId || !mongoose.isValidObjectId(templateId)) {
-        return handleResponse.handleValidationError(res, 'Invalid or missing template ID');
+        handleResponse.handleValidationError(res, 'Invalid or missing template ID');
     }
     const params = req.body;
     const { error } = validateTemplateUpdateData(params);
@@ -62,7 +62,7 @@ export const editTemplate = asyncHandler(async (req, res, next) => {
 export const getTemplate = asyncHandler(async (req, res, next) => {
     const templateId = req.params.templateId;
     if (!templateId || !mongoose.isValidObjectId(templateId)) {
-        return handleResponse.handleValidationError(res, 'Invalid or missing template ID');
+        handleResponse.handleValidationError(res, 'Invalid or missing template ID');
     }
     try {
         const template = await jobService.getTemplateById(templateId);
