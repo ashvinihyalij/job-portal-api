@@ -113,7 +113,6 @@ export const deleteTemplate = asyncHandler(async (req, res, next) => {
 
 export const getTemplates = asyncHandler(async (req, res, next) => {
     try {
-        // Extract query parameters
         const templates = await jobService.getPaginatedTemplates(req);
         handleResponse.handleSuccessResponse(
             res,
@@ -128,6 +127,25 @@ export const getTemplates = asyncHandler(async (req, res, next) => {
         
     } catch (error) {
         logger.error(`Error in getTemplates: ${error}`);
+        handleResponse.handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});
+
+export const getDropdownTemplates = asyncHandler(async (req, res, next) => {
+    try {
+        const templates = await jobService.getAllTemplates();
+        console.log(templates);
+        handleResponse.handleSuccessResponse(
+            res,
+            "Job template listing retrieved successfully.",
+            templates
+        );
+        
+    } catch (error) {
+        logger.error(`Error in getDropdownTemplates: ${error}`);
         handleResponse.handleErrorResponse(
             res,
             "Internal Server Error"

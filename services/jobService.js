@@ -87,6 +87,9 @@ export const getPaginatedTemplates = async (req) => {
 
     return templates;
 };
+export const getAllTemplates = async () => {
+    return await JobTemplate.find({}, 'title').sort({ title: 1 });
+};
 
 const createTemplateObject = (params) => {
     const template = new JobTemplate({

@@ -44,5 +44,12 @@ router.get('/template/:templateId', verify, jobTemplateController.getTemplate);
  */
 router.get('/template', verify, jobTemplateController.getTemplates);
 
+/**
+ * @route GET v1/job/templates/dropdown
+ * @url http://localhost:8080/api/v1/job/templates/dropdown
+ * @desc Gets all job templates
+ * @access Private => any logged in user
+ */
+router.get('/templates/dropdown', verify, jobTemplateController.getDropdownTemplates);
 
 export default router;
