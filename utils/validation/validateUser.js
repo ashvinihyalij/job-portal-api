@@ -6,7 +6,12 @@ export const validateUserData = (user) => {
         lastName: Joi.string().min(2).max(35).required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(6).max(35).required(),
-        roleStatus: Joi.number().valid(1, 2).default(2)
+        //role: Joi.string().valid('superadmin', 'hiringmanager', 'recruiter').required(),
+        role: Joi.string().valid('superadmin', 'hiringmanager', 'recruiter').required().messages({
+            'string.base': `"role" should be a type of 'text'`,
+            'any.required': `"role" is a required field`,
+            'any.only': `Invalid role`
+        }),
     });
     return userSchema.validate(user);
 }

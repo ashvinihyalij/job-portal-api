@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from 'mongoose-paginate-v2';
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { SECRET_ACCESS_TOKEN, BCRYPT_SALT } from '../config/index.js';
@@ -38,21 +39,26 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            required: true,
-            default: "msp",
+            enum: ['superadmin', 'hiringmanager', 'recruiter'],
+            required: true
         },
-        roleStatus: {
-            type: Number,
-            enum: [1, 2],
-            default: 2
+        lastLogin: {
+            type: Date,
+            default: null
         },
-        about: {
-            type: String,
-            default: ''
+        is_deleted: {
+            type: Boolean,
+            default: false,
         }
     },
     {timestamps: true}
 );
+// Middleware to automatically exclude soft deleted documents
+userSchema.pre(/^find/, function(next) {
+    // `this` points to the current query
+    this.find({ is_deleted: { $ne: true } });
+    next();
+});
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         return next();
@@ -96,5 +102,6 @@ userSchema.methods.generateAccessJWT = function () {
         expiresIn: '60m',
     });
 };
-
+// Apply the pagination plugin
+userSchema.plugin(mongoosePaginate);
 export default mongoose.model('User', userSchema);

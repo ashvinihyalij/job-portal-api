@@ -71,6 +71,14 @@ const jobSchema = new mongoose.Schema({
         enum: ['Pending', 'Open', 'Sourcing', 'Rejected', 'Closed', 'Filled'],
         default: 'Open'
     },
+    min_budget: {
+        type: Number,
+        default: null
+    },
+    max_budget: {
+        type: Number,
+        default: null
+    },
     is_deleted: {
         type: Boolean,
         default: false,

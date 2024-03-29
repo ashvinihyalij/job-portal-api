@@ -43,7 +43,7 @@ export const verify = asyncHandler(async(req, res, next) => {
             });
         }        
     } catch (err) {
-        logger.error(`Error in registerController: ${err}`);
+        logger.error(`Error in verify: ${err}`);
         handleErrorResponse(
             res,
             "Internal Server Error"
@@ -51,7 +51,7 @@ export const verify = asyncHandler(async(req, res, next) => {
     }
 });
 
-export const verifyRole = asyncHandler(async(req, res, next) => {
+/*export const verifyRole = asyncHandler(async(req, res, next) => {
     try {
         const user = req.user; // we have access to the user object from the request
         const { role } = user; // extract the user role
@@ -72,7 +72,7 @@ export const verifyRole = asyncHandler(async(req, res, next) => {
             "Internal Server Error"
         );
     }
-});
+});*/
 
 export const verifyAdmin = asyncHandler(async(req, res, next) => {
     try {
@@ -80,7 +80,7 @@ export const verifyAdmin = asyncHandler(async(req, res, next) => {
         const { role, roleStatus } = user; // extract the user role
         // check if user has no advance privileges
         // return an unathorized response
-        if (role !== "msp" || roleStatus !== 1) {            
+        if (role !== "admin") {            
             return handleErrorResponse(
                 res,
                 "Sorry, You'he no rights to perform this operation.",
@@ -89,7 +89,32 @@ export const verifyAdmin = asyncHandler(async(req, res, next) => {
         }
         next(); // continue to the next middleware or function
     } catch (err) {
-        logger.error(`Error in verifyrole: ${err}`);
+        logger.error(`Error in verifyAdmin: ${err}`);
+        handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});
+
+export const verifyRole = (allowedRoles) => asyncHandler(async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { role } = user;
+
+        // Check if the user role is allowed
+        if (!allowedRoles.includes(role)) {
+            return handleErrorResponse(
+                res,
+                "Sorry, You have no rights to perform this operation.",
+                401
+            );
+        }
+        
+        // Continue to the next middleware or function
+        next();
+    } catch (err) {
+        logger.error(`Error in verifyRole: ${err}`);
         handleErrorResponse(
             res,
             "Internal Server Error"

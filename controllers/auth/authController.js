@@ -134,10 +134,12 @@ export const login = asyncHandler(async (req, res) => {
                 401
             );
         }
-
+        // Update lastLogin field with current date and time
+        user.lastLogin = new Date();
+        await user.save();
         const { password, ...user_data } = user._doc;
         
-        const token = user.generateAccessJWT(); // generate session token for user        
+        const token = user.generateAccessJWT(); // generate session token for user
         user_data.token = token;
         handleSuccessResponse(
             res,
