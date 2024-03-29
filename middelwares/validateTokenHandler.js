@@ -106,8 +106,8 @@ export const verifyRole = (allowedRoles) => asyncHandler(async (req, res, next) 
         if (!allowedRoles.includes(role)) {
             return handleErrorResponse(
                 res,
-                "Sorry, You have no rights to perform this operation.",
-                401
+                "Forbidden - You don't have permission to access this.",
+                403
             );
         }
         

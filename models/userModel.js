@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import mongoosePaginate from 'mongoose-paginate-v2';
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { SECRET_ACCESS_TOKEN, BCRYPT_SALT } from '../config/index.js';
+import { SECRET_ACCESS_TOKEN, BCRYPT_SALT, ROLES } from '../config/index.js';
 
 // schema
 const userSchema = new mongoose.Schema(
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ['superadmin', 'hiringmanager', 'recruiter'],
+            enum: Object.values(ROLES),
             required: true
         },
         lastLogin: {

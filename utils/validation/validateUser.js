@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { ROLES } from '../../config/index.js';
 
 export const validateUserData = (user) => {
     const userSchema = Joi.object({
@@ -6,8 +7,7 @@ export const validateUserData = (user) => {
         lastName: Joi.string().min(2).max(35).required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(6).max(35).required(),
-        //role: Joi.string().valid('superadmin', 'hiringmanager', 'recruiter').required(),
-        role: Joi.string().valid('superadmin', 'hiringmanager', 'recruiter').required().messages({
+        role: Joi.string().valid(ROLES.SuperAdmin, ROLES.HiringManager, ROLES.Recruiter).required().messages({
             'string.base': `"role" should be a type of 'text'`,
             'any.required': `"role" is a required field`,
             'any.only': `Invalid role`

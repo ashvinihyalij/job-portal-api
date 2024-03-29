@@ -1,6 +1,7 @@
 import express from "express";
 import * as jobTemplateController from "../../controllers/job/jobTemplateController.js";
 import {verify, verifyRole} from '../../middelwares/validateTokenHandler.js';
+import { ROLES }from '../../config/index.js';
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ const router = express.Router();
  * @desc adds job template
  * @access Private => msp superadmin
  */
-router.post('/template', verify, verifyRole(['superadmin']), jobTemplateController.addTemplate);
+router.post('/template', verify, verifyRole([ROLES.SuperAdmin]), jobTemplateController.addTemplate);
 
 /**
  * @route PUT v1/job/template/{templateId}
@@ -18,7 +19,7 @@ router.post('/template', verify, verifyRole(['superadmin']), jobTemplateControll
  * @desc Edits job template
  * @access Private => msp superadmin
  */
-router.put('/template/:templateId', verify, verifyRole(['superadmin']), jobTemplateController.editTemplate);
+router.put('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin]), jobTemplateController.editTemplate);
 
 /**
  * @route DELETE v1/job/template/{templateId}
@@ -26,7 +27,7 @@ router.put('/template/:templateId', verify, verifyRole(['superadmin']), jobTempl
  * @desc Deletes job template
  * @access Private => msp superadmin
  */
-router.delete('/template/:templateId', verify, verifyRole(['superadmin']), jobTemplateController.deleteTemplate);
+router.delete('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin]), jobTemplateController.deleteTemplate);
 
 /**
  * @route GET v1/job/template/{templateId}
@@ -34,7 +35,7 @@ router.delete('/template/:templateId', verify, verifyRole(['superadmin']), jobTe
  * @desc Gets job template
  * @access Private => any logged in user
  */
-router.get('/template/:templateId', verify, verifyRole(['superadmin','hiringmanager']), jobTemplateController.getTemplate);
+router.get('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin,ROLES.HiringManager]), jobTemplateController.getTemplate);
 
 /**
  * @route GET v1/job/template?page=1&filter=laravel
@@ -42,7 +43,7 @@ router.get('/template/:templateId', verify, verifyRole(['superadmin','hiringmana
  * @desc Gets job templates
  * @access Private => any logged in user
  */
-router.get('/template', verify, verifyRole(['superadmin','hiringmanager']), jobTemplateController.getTemplates);
+router.get('/template', verify, verifyRole([ROLES.SuperAdmin,ROLES.HiringManager]), jobTemplateController.getTemplates);
 
 /**
  * @route GET v1/job/templates/dropdown
