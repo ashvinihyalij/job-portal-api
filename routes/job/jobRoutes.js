@@ -2,6 +2,7 @@ import express from "express";
 import * as jobTemplateController from "../../controllers/job/jobTemplateController.js";
 import {verify, verifyRole} from '../../middelwares/validateTokenHandler.js';
 import { ROLES }from '../../config/index.js';
+import * as jobController from "../../controllers/job/jobController.js";
 
 const router = express.Router();
 
@@ -52,5 +53,14 @@ router.get('/template', verify, verifyRole([ROLES.SuperAdmin,ROLES.HiringManager
  * @access Private => any logged in user
  */
 router.get('/templates/dropdown', verify, jobTemplateController.getDropdownTemplates);
+
+/**
+ * @route POST v1/job
+ * @url http://localhost:8080/api/v1/job
+ * @desc adds job
+ * @access Private => msp superadmin
+ */
+router.post('',  verify, verifyRole([ROLES.SuperAdmin]), jobController.addJob);
+
 
 export default router;

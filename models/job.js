@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import workLocation from "./workLocation.js";
 import department from "./department.js";
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { ROLES } from '../config/index.js';
 
 const jobSchema = new mongoose.Schema({
-    jobTemplateId: {
+    jobTemplate: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'JobTemplate',
         required: true
@@ -13,11 +14,6 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
     },
     hiringManager: {
         type: mongoose.Schema.Types.ObjectId,
@@ -52,14 +48,10 @@ const jobSchema = new mongoose.Schema({
         enum: ['First', 'Second', 'Third', 'General'],
     },
     shiftStartTime: {
-        type: Number,
-        min: 0,
-        max: 23
+        type: String        
     },
     shiftEndTime: {
-        type: Number,
-        min: 0,
-        max: 23
+        type: String
     },
     additionalInfo: String,
     releasedDate: {
@@ -78,6 +70,16 @@ const jobSchema = new mongoose.Schema({
     max_budget: {
         type: Number,
         default: null
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    createdType: {
+        type: String,
+        enum: Object.values(ROLES),
+        required: true
     },
     is_deleted: {
         type: Boolean,

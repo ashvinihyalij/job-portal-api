@@ -1,5 +1,7 @@
 import JobTemplate from "../models/JobTemplate.js";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER } from '../config/index.js';
+import job from "../models/job.js";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER, ROLES } from '../config/index.js';
+import crypto from "crypto";
 
 export const createTemplate = async (params) => {
     const templateObject = createTemplateObject(params);
@@ -91,6 +93,26 @@ export const getAllTemplates = async () => {
     return await JobTemplate.find({}, 'title').sort({ title: 1 });
 };
 
+export const createJob = async (params) => {
+    const jobObject = createJobObject(params);
+    const savedJob = await jobObject.save();
+
+    return await job.findById(savedJob._id)
+        .populate({
+            path: 'jobTemplate',
+            select: 'title subtitle category',
+            populate: {
+                path: 'category',
+                model: 'JobCategory',
+                select: 'title',
+            }
+        })
+        .populate('hiringManager', 'firstName lastName joined')
+        .populate('workLocation', 'name')
+        .populate('department', 'name')
+        .populate('createdBy', 'firstName lastName joined');
+};
+
 const createTemplateObject = (params) => {
     const template = new JobTemplate({
         title: params.title,
@@ -101,4 +123,25 @@ const createTemplateObject = (params) => {
         templateStatus: 1
     });
     return template;
+}
+
+const createJobObject = (params) => {
+    return new job({
+        jobTemplate: params.jobTemplate,
+        jobCode: `JC${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+        hiringManager: params.hiringManager,
+        workLocation: params.workLocation,
+        department: params.department,
+        numOfOpenings: params.numOfOpenings ?? 1,
+        workingMode: params.workingMode,
+        reasonForHire: params.reasonForHire,
+        shift: params.shift,
+        shiftStartTime: params.shiftStartTime,
+        shiftEndTime: params.shiftEndTime,
+        min_budget: params.min_budget ?? null,
+        max_budget: params.max_budget ?? null,
+        createdBy: params.user.id,
+        createdType: params.user.role,
+        jobStatus: params.user.role === ROLES.SuperAdmin ? 'Open' : 'Pending'
+    });   
 }
