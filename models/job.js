@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 import workLocation from "./workLocation.js";
 import department from "./department.js";
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { ROLES } from '../config/index.js';
+import { JOB_STATUS, JOB_WORKING_MODE, REASON_FOR_HIRE, ROLES, SHIFT } from '../config/index.js';
+
 
 const jobSchema = new mongoose.Schema({
     jobTemplate: {
@@ -37,39 +38,50 @@ const jobSchema = new mongoose.Schema({
     },
     workingMode: {
         type: String,
-        enum: ['Remote', 'Onsite', 'Hybrid'],
+        enum: Object.values(JOB_WORKING_MODE),
     },
     reasonForHire: {
         type: String,
-        enum: ['Expansion', 'Replacement'],
+        enum: Object.values(REASON_FOR_HIRE),
     },
     shift: {
         type: String,
-        enum: ['First', 'Second', 'Third', 'General'],
+        enum: Object.values(SHIFT),
     },
     shiftStartTime: {
-        type: String        
+        type: String
     },
     shiftEndTime: {
         type: String
     },
-    additionalInfo: String,
     releasedDate: {
         type: Date,
         default: null
     },
     jobStatus: {
         type: String,
-        enum: ['Pending', 'Open', 'Sourcing', 'Rejected', 'Closed', 'Filled'],
-        default: 'Open'
+        enum: Object.values(JOB_STATUS),
+        default: JOB_STATUS.Open
     },
-    min_budget: {
-        type: Number,
-        default: null
+    budget: {
+        min: {
+            type: Number,
+            default: null
+        },
+        max: {
+            type: Number,
+            default: null
+        }
     },
-    max_budget: {
-        type: Number,
-        default: null
+    experience: {
+        min: {
+            type: Number,
+            default: null
+        },
+        max: {
+            type: Number,
+            default: null
+        }
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -91,16 +103,16 @@ const jobSchema = new mongoose.Schema({
 jobSchema.plugin(mongoosePaginate);
 
 // Middleware to automatically exclude soft deleted documents
-jobSchema.pre(/^find/, function(next) {
-  // `this` points to the current query
-  this.find({ is_deleted: { $ne: true } });
-  next();
+jobSchema.pre(/^find/, function (next) {
+    // `this` points to the current query
+    this.find({ is_deleted: { $ne: true } });
+    next();
 });
 
 // Instance method for soft delete
-jobSchema.methods.softDelete = async function() {
-  this.is_deleted = true;
-  await this.save();
+jobSchema.methods.softDelete = async function () {
+    this.is_deleted = true;
+    await this.save();
 };
 
 const Job = mongoose.model('Job', jobSchema);

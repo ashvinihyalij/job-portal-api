@@ -1,6 +1,6 @@
 import JobTemplate from "../models/JobTemplate.js";
 import job from "../models/job.js";
-import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER, ROLES } from '../config/index.js';
+import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER, JOB_STATUS, ROLES } from '../config/index.js';
 import crypto from "crypto";
 
 export const createTemplate = async (params) => {
@@ -9,12 +9,12 @@ export const createTemplate = async (params) => {
 
     // Populate the jobCategoryId and userId fields of the saved JobTemplate object
     return await JobTemplate.findById(savedTemplate._id)
-    .populate('category', 'title')
-    .populate('user', 'firstName lastName joined');    
+        .populate('category', 'title')
+        .populate('user', 'firstName lastName joined');
 };
 
 export const updateTemplate = async (templateId, params) => {
-    
+
     const updatedTemplate = await JobTemplate.findByIdAndUpdate(
         templateId,
         params,
@@ -23,14 +23,14 @@ export const updateTemplate = async (templateId, params) => {
 
     // Populate the category and user fields of the saved JobTemplate object
     return await JobTemplate.findById(updatedTemplate._id)
-    .populate('category', 'title')
-    .populate('user', 'firstName lastName joined');
+        .populate('category', 'title')
+        .populate('user', 'firstName lastName joined');
 };
 
 export const getTemplateById = async (templateId) => {
     return await JobTemplate.findById(templateId)
-            .populate('category', 'title')
-            .populate('user', 'firstName lastName joined');    
+        .populate('category', 'title')
+        .populate('user', 'firstName lastName joined');
 };
 
 export const getPaginatedTemplates = async (req) => {
@@ -61,7 +61,7 @@ export const getPaginatedTemplates = async (req) => {
                 query.templateStatus = '0';
                 break;
             default:
-                break;        
+                break;
         }
     }
 
@@ -138,10 +138,16 @@ const createJobObject = (params) => {
         shift: params.shift,
         shiftStartTime: params.shiftStartTime,
         shiftEndTime: params.shiftEndTime,
-        min_budget: params.min_budget ?? null,
-        max_budget: params.max_budget ?? null,
+        budget: {
+            min: params.min_budget ?? null,
+            max: params.max_budget ?? null
+        },
+        experience: {
+            min: params.min_experience ?? null,
+            max: params.max_experience ?? null
+        },
         createdBy: params.user.id,
         createdType: params.user.role,
-        jobStatus: params.user.role === ROLES.SuperAdmin ? 'Open' : 'Pending'
-    });   
+        jobStatus: params.user.role === ROLES.SuperAdmin ? JOB_STATUS.Open : JOB_STATUS.Pending
+    });
 }

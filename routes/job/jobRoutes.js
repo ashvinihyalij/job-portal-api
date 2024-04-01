@@ -1,7 +1,7 @@
 import express from "express";
 import * as jobTemplateController from "../../controllers/job/jobTemplateController.js";
-import {verify, verifyRole} from '../../middelwares/validateTokenHandler.js';
-import { ROLES }from '../../config/index.js';
+import { verify, verifyRole } from '../../middelwares/validateTokenHandler.js';
+import { ROLES } from '../../config/index.js';
 import * as jobController from "../../controllers/job/jobController.js";
 
 const router = express.Router();
@@ -36,7 +36,7 @@ router.delete('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin]), j
  * @desc Gets job template
  * @access Private => any logged in user
  */
-router.get('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin,ROLES.HiringManager]), jobTemplateController.getTemplate);
+router.get('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobTemplateController.getTemplate);
 
 /**
  * @route GET v1/job/template?page=1&filter=laravel
@@ -44,7 +44,7 @@ router.get('/template/:templateId', verify, verifyRole([ROLES.SuperAdmin,ROLES.H
  * @desc Gets job templates
  * @access Private => any logged in user
  */
-router.get('/template', verify, verifyRole([ROLES.SuperAdmin,ROLES.HiringManager]), jobTemplateController.getTemplates);
+router.get('/template', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobTemplateController.getTemplates);
 
 /**
  * @route GET v1/job/templates/dropdown
@@ -58,9 +58,9 @@ router.get('/templates/dropdown', verify, jobTemplateController.getDropdownTempl
  * @route POST v1/job
  * @url http://localhost:8080/api/v1/job
  * @desc adds job
- * @access Private => msp superadmin
+ * @access Private => superadmin/Hiring manager
  */
-router.post('',  verify, verifyRole([ROLES.SuperAdmin]), jobController.addJob);
+router.post('', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobController.addJob);
 
 
 export default router;

@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { JOB_STATUS, JOB_WORKING_MODE, REASON_FOR_HIRE, SHIFT } from "./status.js";
 dotenv.config();
 
 const { PORT, DEV_MODE, MONGO_URL, BASE_URL, BCRYPT_SALT, SECRET_ACCESS_TOKEN } = process.env;
@@ -13,4 +14,19 @@ const ROLES = {
     Recruiter: 'recruiter'
 };
 
-export { PORT, DEV_MODE, MONGO_URL, BASE_URL, BCRYPT_SALT, SECRET_ACCESS_TOKEN, DEFAULT_PAGE_LIMIT, DEFAULT_SORT_ORDER, DEFAULT_SORT_FIELD, ROLES };
+export {
+    PORT,
+    DEV_MODE,
+    MONGO_URL,
+    BASE_URL,
+    BCRYPT_SALT,
+    SECRET_ACCESS_TOKEN,
+    DEFAULT_PAGE_LIMIT,
+    DEFAULT_SORT_ORDER,
+    DEFAULT_SORT_FIELD,
+    ROLES,
+    JOB_STATUS,
+    JOB_WORKING_MODE,
+    REASON_FOR_HIRE,
+    SHIFT
+};

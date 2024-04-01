@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { JOB_WORKING_MODE, REASON_FOR_HIRE, SHIFT } from '../../config/index.js';
 
 export const validateJobData = (job) => {
     const jobSchema = Joi.object({
@@ -6,7 +7,7 @@ export const validateJobData = (job) => {
             'string.length': `"jobTemplate" must be a 24-character hex string`,
             'string.hex': `"jobTemplate" must be a hex string`,
             'any.required': `"jobTemplate" is a required field`
-        }),        
+        }),
         hiringManager: Joi.string().length(24).hex().required().messages({
             'string.length': `"hiringManager" must be a 24-character hex string`,
             'string.hex': `"hiringManager" must be a hex string`,
@@ -23,19 +24,25 @@ export const validateJobData = (job) => {
             'any.required': `"department" is a required field`
         }),
         numOfOpenings: Joi.number().default(1),
-        workingMode: Joi.string().valid('Remote', 'Onsite', 'Hybrid').required(),
-        reasonForHire: Joi.string().valid('Expansion', 'Replacement').required(),
-        shift: Joi.string().valid('First', 'Second', 'Third', 'General').required(),
-        shiftStartTime: Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3])$/) // Regex pattern to ensure format and range        
-        .messages({
-          'string.pattern.base': `"shiftStartTime" must be in the format of HH with a range between 00 to 23`,
-        }),
-        shiftEndTime: Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3])$/) // Regex pattern to ensure format and range        
-        .messages({
-          'string.pattern.base': `"shiftEndTime" must be in the format of HH with a range between 00 to 23`,
-        }),
+        workingMode: Joi.string().valid(
+            JOB_WORKING_MODE.Remote,
+            JOB_WORKING_MODE.Onsite,
+            JOB_WORKING_MODE.Hybrid
+        ).required(),
+        reasonForHire: Joi.string().valid(REASON_FOR_HIRE.Expansion, REASON_FOR_HIRE.Replacement).required(),
+        shift: Joi.string().valid(SHIFT.First, SHIFT.Second, SHIFT.Third, SHIFT.General).required(),
+        shiftStartTime: Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3])$/) // Regex pattern to ensure format and range
+            .messages({
+                'string.pattern.base': `"shiftStartTime" must be in the format of HH with a range between 00 to 23`,
+            }),
+        shiftEndTime: Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3])$/) // Regex pattern to ensure format and range
+            .messages({
+                'string.pattern.base': `"shiftEndTime" must be in the format of HH with a range between 00 to 23`,
+            }),
         min_budget: Joi.number(),
-        max_budget: Joi.number()        
+        max_budget: Joi.number(),
+        min_experience: Joi.number(),
+        max_experience: Joi.number()
     });
     return jobSchema.validate(job);
 }
