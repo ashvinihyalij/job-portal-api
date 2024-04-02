@@ -8,11 +8,11 @@ import { makeObjectSelected } from '../../utils/common.js';
 import JobTemplate from "../../models/JobTemplate.js";
 
 export const addTemplate = asyncHandler(async (req, res, next) => {
-        let params = req.body;
-        const { error } = validateTemplateData(params);
-        if (error) {
-            handleResponse.handleValidationError(res, error.details[0].message);
-        }
+    let params = req.body;
+    const { error } = validateTemplateData(params);
+    if (error) {
+        handleResponse.handleValidationError(res, error.details[0].message);
+    }
 
     try {
         params.user = req.user;
@@ -124,7 +124,7 @@ export const getTemplates = asyncHandler(async (req, res, next) => {
                 currentPage: templates.page,
             }
         );
-        
+
     } catch (error) {
         logger.error(`Error in getTemplates: ${error}`);
         handleResponse.handleErrorResponse(
@@ -143,7 +143,7 @@ export const getDropdownTemplates = asyncHandler(async (req, res, next) => {
             "Job template listing retrieved successfully.",
             templates
         );
-        
+
     } catch (error) {
         logger.error(`Error in getDropdownTemplates: ${error}`);
         handleResponse.handleErrorResponse(

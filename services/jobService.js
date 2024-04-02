@@ -2,6 +2,7 @@ import JobTemplate from "../models/JobTemplate.js";
 import job from "../models/job.js";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER, JOB_STATUS, ROLES } from '../config/index.js';
 import crypto from "crypto";
+import { makeObjectSelected } from '../utils/common.js';
 
 export const createTemplate = async (params) => {
     const templateObject = createTemplateObject(params);
@@ -97,7 +98,58 @@ export const createJob = async (params) => {
     const jobObject = createJobObject(params);
     const savedJob = await jobObject.save();
 
-    return await job.findById(savedJob._id)
+    return getJobDetails(savedJob._id);
+
+    /*return await job.findById(savedJob._id)
+        .populate({
+            path: 'jobTemplate',
+            select: 'title subtitle category',
+            populate: {
+                path: 'category',
+                model: 'JobCategory',
+                select: 'title',
+            }
+        })
+        .populate('hiringManager', 'firstName lastName joined')
+        .populate('workLocation', 'name')
+        .populate('department', 'name')
+        .populate('createdBy', 'firstName lastName joined');*/
+};
+
+export const getJobById = async (jobId) => {
+    return await getJobDetails(jobId);
+};
+
+export const canEdit = async (jobId, user) => {
+    const jobDetails = await job.findById(jobId);
+    // Check if the logged-in user is a superadmin
+    if (user.role === ROLES.SuperAdmin) {
+        return true;
+    }
+
+    // Check if the job was created by the logged-in user
+    if (jobDetails.createdBy.equals(user._id)) {
+        return true;
+    }
+
+    return false;
+};
+
+export const updateJob = async (jobId, params) => {
+    const updatedJob = await job.findByIdAndUpdate(
+        jobId,
+        params,
+        { new: true } // Return the updated document
+    );
+    return getJobDetails(updatedJob._id);
+};
+
+export const makeJobResponse = (jobObject) => {
+    return makeObjectSelected(jobObject, ['_id', 'jobTemplate', 'hiringManager', 'workLocation', 'department', 'numOfOpenings', 'workingMode', 'reasonForHire', 'shift', 'budget', 'experience', 'jobStatus', 'skills', 'createdBy', 'createdType']);
+};
+
+const getJobDetails = async (jobId) => {
+    return await job.findById(jobId)
         .populate({
             path: 'jobTemplate',
             select: 'title subtitle category',
@@ -138,14 +190,8 @@ const createJobObject = (params) => {
         shift: params.shift,
         shiftStartTime: params.shiftStartTime,
         shiftEndTime: params.shiftEndTime,
-        budget: {
-            min: params.min_budget ?? null,
-            max: params.max_budget ?? null
-        },
-        experience: {
-            min: params.min_experience ?? null,
-            max: params.max_experience ?? null
-        },
+        budget: params.budget ?? null,
+        experience: params.experience ?? null,
         createdBy: params.user.id,
         createdType: params.user.role,
         jobStatus: params.user.role === ROLES.SuperAdmin ? JOB_STATUS.Open : JOB_STATUS.Pending

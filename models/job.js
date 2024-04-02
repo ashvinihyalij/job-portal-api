@@ -45,14 +45,16 @@ const jobSchema = new mongoose.Schema({
         enum: Object.values(REASON_FOR_HIRE),
     },
     shift: {
-        type: String,
-        enum: Object.values(SHIFT),
-    },
-    shiftStartTime: {
-        type: String
-    },
-    shiftEndTime: {
-        type: String
+        shift: {
+            type: String,
+            enum: Object.values(SHIFT),
+        },
+        startTime: {
+            type: String
+        },
+        endTime: {
+            type: String
+        }
     },
     releasedDate: {
         type: Date,
@@ -83,6 +85,11 @@ const jobSchema = new mongoose.Schema({
             default: null
         }
     },
+    skills: [{
+        type: String,
+        trim: true,
+        lowercase: true
+    }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

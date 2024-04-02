@@ -62,5 +62,12 @@ router.get('/templates/dropdown', verify, jobTemplateController.getDropdownTempl
  */
 router.post('', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobController.addJob);
 
+/**
+ * @route PUT v1/job/{jobId}
+ * @url http://localhost:8080/api/v1/job/{jobId}
+ * @desc Edits job
+ * @access Private => superadmin/Hiring manager
+ */
+router.put('/:jobId', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobController.editJob);
 
 export default router;
