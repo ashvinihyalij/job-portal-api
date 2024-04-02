@@ -102,3 +102,23 @@ export const validateJobUpdateData = (job) => {
     }).min(1); // At least one field is required for update
     return jobSchema.validate(job);
 };
+
+export const validateJobReleaseData = (job) => {
+    const schema = Joi.object({
+        released: Joi.array().items(Joi.object({
+            to: Joi.string().length(24).hex().required().messages({
+                'string.length': `"to" must be a 24-character hex string`,
+                'string.hex': `"to" must be a hex string`,
+                'any.required': `"to" is a required field`
+            }),
+            date: Joi.date().iso().optional().messages({ // Make `date` optional
+                'date.iso': `"date" must be in ISO 8601 date format`
+            })
+        })).required().messages({
+            'array.min': `"released" must contain at least one entry`,
+            'any.required': `"released" is a required field`
+        })
+    });
+
+    return schema.validate(job);
+};

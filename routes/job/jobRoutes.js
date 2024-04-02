@@ -78,4 +78,17 @@ router.put('/:jobId', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]
  */
 router.get('/:jobId', verify, jobController.getJob);
 
+/**
+ * @route GET v1/job/release/{jobId}
+ * @url http://localhost:8080/api/v1/job/release/{jobId}
+ * @desc Release job to recruiter
+ * @access Private => only superadmin
+ */
+router.get('/release/:jobId', verify, verifyRole([ROLES.SuperAdmin]), jobController.releaseJob);
+
+// release job to vendor. Only sourcing status jobs will get release
+// change job status
+// get jobs with pagination
+// recruiter => 
+
 export default router;

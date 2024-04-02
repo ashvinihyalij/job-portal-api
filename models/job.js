@@ -56,10 +56,6 @@ const jobSchema = new mongoose.Schema({
             type: String
         }
     },
-    releasedDate: {
-        type: Date,
-        default: null
-    },
     jobStatus: {
         type: String,
         enum: Object.values(JOB_STATUS),
@@ -89,6 +85,15 @@ const jobSchema = new mongoose.Schema({
         type: String,
         trim: true,
         lowercase: true
+    }],
+    released: [{
+        to: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        date: {
+            type: Date
+        }
     }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

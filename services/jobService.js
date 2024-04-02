@@ -1,4 +1,5 @@
 import JobTemplate from "../models/JobTemplate.js";
+import userModel from "../models/userModel.js";
 import job from "../models/job.js";
 import { DEFAULT_PAGE_LIMIT, DEFAULT_SORT_FIELD, DEFAULT_SORT_ORDER, JOB_STATUS, ROLES } from '../config/index.js';
 import crypto from "crypto";
@@ -102,6 +103,31 @@ export const createJob = async (params) => {
 
 export const getJobById = async (jobId, relatedModules = true) => {
     return await getJobDetails(jobId, relatedModules);
+};
+
+export const releaseJobToRecruiter = async (jobObject, params) => {
+    jobObject.released = params.released;
+    const updatedJobDoc = await jobObject.save();
+
+    const populatedJobDoc = await job.findById(updatedJobDoc._id)
+        .populate({
+            path: 'released.to',
+            select: 'firstName lastName'
+        });
+    const response = {
+        _id: populatedJobDoc._id,
+        released: populatedJobDoc.released.map(release => ({
+            to: release.to ? {
+                _id: release.to._id,
+                firstName: release.to.firstName,
+                lastName: release.to.lastName,
+            } : null, // Handle cases where 'to' might not be populated correctly
+            date: release.date
+        }))
+    };
+
+    // Return the structured response
+    return response;
 };
 
 export const canEdit = async (jobId, user) => {

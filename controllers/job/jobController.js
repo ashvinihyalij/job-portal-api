@@ -1,13 +1,16 @@
 import mongoose from 'mongoose';
 import asyncHandler from "express-async-handler";
 import * as handleResponse from '../../utils/apiResponse.js';
-//import { validateTemplateData, validateTemplateUpdateData } from '../../utils/validation/validateTemplate.js';
-import { validateJobData, validateJobUpdateData } from '../../utils/validation/validateJob.js';
+import {
+    validateJobData,
+    validateJobUpdateData,
+    validateJobReleaseData
+} from '../../utils/validation/validateJob.js';
 import logger from '../../utils/winston/index.js';
 import * as jobService from '../../services/jobService.js';
-import { makeObjectSelected } from '../../utils/common.js';
+//import { makeObjectSelected } from '../../utils/common.js';
 import { ROLES } from '../../config/index.js';
-import job from "../../models/job.js";
+//import job from "../../models/job.js";
 
 export const addJob = asyncHandler(async (req, res, next) => {
     let params = req.body;
@@ -90,6 +93,45 @@ export const getJob = asyncHandler(async (req, res, next) => {
         );
     } catch (error) {
         logger.error(`Error in getJob: ${error}`);
+        handleResponse.handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});
+
+export const releaseJob = asyncHandler(async (req, res, next) => {
+    const jobId = req.params.jobId;
+    if (!jobId || !mongoose.isValidObjectId(jobId)) {
+        handleResponse.handleValidationError(res, 'Invalid or missing job ID');
+    }
+    const params = req.body;
+
+    const { error } = validateJobReleaseData(params);
+    if (error) {
+        handleResponse.handleValidationError(res, error.details[0].message);
+    }
+    params.released.forEach(release => {
+        if (!release.date) {
+            // Set date to current date and time if not provided
+            release.date = new Date().toISOString();
+        }
+    });
+    try {
+        const jobDoc = await jobService.getJobById(jobId);
+        if (!jobDoc) {
+            return handleResponse.handleErrorResponse(res, 'Job not found', 404);
+        }
+
+        const jobData = await jobService.releaseJobToRecruiter(jobDoc, params);
+
+        handleResponse.handleSuccessResponse(
+            res,
+            "Job retrieved successfully.",
+            [jobData]
+        );
+    } catch (error) {
+        logger.error(`Error in releaseJob: ${error}`);
         handleResponse.handleErrorResponse(
             res,
             "Internal Server Error"
