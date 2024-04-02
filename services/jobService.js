@@ -97,27 +97,11 @@ export const getAllTemplates = async () => {
 export const createJob = async (params) => {
     const jobObject = createJobObject(params);
     const savedJob = await jobObject.save();
-
     return getJobDetails(savedJob._id);
-
-    /*return await job.findById(savedJob._id)
-        .populate({
-            path: 'jobTemplate',
-            select: 'title subtitle category',
-            populate: {
-                path: 'category',
-                model: 'JobCategory',
-                select: 'title',
-            }
-        })
-        .populate('hiringManager', 'firstName lastName joined')
-        .populate('workLocation', 'name')
-        .populate('department', 'name')
-        .populate('createdBy', 'firstName lastName joined');*/
 };
 
-export const getJobById = async (jobId) => {
-    return await getJobDetails(jobId);
+export const getJobById = async (jobId, relatedModules = true) => {
+    return await getJobDetails(jobId, relatedModules);
 };
 
 export const canEdit = async (jobId, user) => {
@@ -148,21 +132,24 @@ export const makeJobResponse = (jobObject) => {
     return makeObjectSelected(jobObject, ['_id', 'jobTemplate', 'hiringManager', 'workLocation', 'department', 'numOfOpenings', 'workingMode', 'reasonForHire', 'shift', 'budget', 'experience', 'jobStatus', 'skills', 'createdBy', 'createdType']);
 };
 
-const getJobDetails = async (jobId) => {
-    return await job.findById(jobId)
-        .populate({
-            path: 'jobTemplate',
-            select: 'title subtitle category',
-            populate: {
-                path: 'category',
-                model: 'JobCategory',
-                select: 'title',
-            }
-        })
-        .populate('hiringManager', 'firstName lastName joined')
-        .populate('workLocation', 'name')
-        .populate('department', 'name')
-        .populate('createdBy', 'firstName lastName joined');
+const getJobDetails = async (jobId, relatedModules = true) => {
+    if (relatedModules) {
+        return await job.findById(jobId)
+            .populate({
+                path: 'jobTemplate',
+                select: 'title subtitle category',
+                populate: {
+                    path: 'category',
+                    model: 'JobCategory',
+                    select: 'title',
+                }
+            })
+            .populate('hiringManager', 'firstName lastName joined')
+            .populate('workLocation', 'name')
+            .populate('department', 'name')
+            .populate('createdBy', 'firstName lastName joined');
+    }
+    return await job.findById(jobId);
 };
 
 const createTemplateObject = (params) => {

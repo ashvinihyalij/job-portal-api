@@ -71,3 +71,28 @@ export const editJob = asyncHandler(async (req, res, next) => {
         );
     }
 });
+
+export const getJob = asyncHandler(async (req, res, next) => {
+    const jobId = req.params.jobId;
+    if (!jobId || !mongoose.isValidObjectId(jobId)) {
+        handleResponse.handleValidationError(res, 'Invalid or missing job ID');
+    }
+    try {
+        const jobDoc = await jobService.getJobById(jobId);
+        if (!jobDoc) {
+            return handleResponse.handleErrorResponse(res, 'Job not found', 404);
+        }
+        const jobData = jobService.makeJobResponse(jobDoc);
+        handleResponse.handleSuccessResponse(
+            res,
+            "Job retrieved successfully.",
+            [jobData]
+        );
+    } catch (error) {
+        logger.error(`Error in getJob: ${error}`);
+        handleResponse.handleErrorResponse(
+            res,
+            "Internal Server Error"
+        );
+    }
+});

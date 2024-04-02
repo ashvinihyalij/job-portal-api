@@ -70,4 +70,12 @@ router.post('', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), job
  */
 router.put('/:jobId', verify, verifyRole([ROLES.SuperAdmin, ROLES.HiringManager]), jobController.editJob);
 
+/**
+ * @route GET v1/job/{jobId}
+ * @url http://localhost:8080/api/v1/job/{jobId}
+ * @desc Gets job
+ * @access Private => any logged in user
+ */
+router.get('/:jobId', verify, jobController.getJob);
+
 export default router;
