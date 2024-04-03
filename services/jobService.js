@@ -105,8 +105,8 @@ export const getJobById = async (jobId, relatedModules = true) => {
     return await getJobDetails(jobId, relatedModules);
 };
 
-export const releaseJobToRecruiter = async (jobObject, params) => {
-    jobObject.released = params.released;
+export const releaseJobToRecruiter = async (jobObject) => {
+    //jobObject.released = params.released;
     const updatedJobDoc = await jobObject.save();
 
     const populatedJobDoc = await job.findById(updatedJobDoc._id)

@@ -123,7 +123,13 @@ export const releaseJob = asyncHandler(async (req, res, next) => {
             return handleResponse.handleErrorResponse(res, 'Job not found', 404);
         }
 
-        const jobData = await jobService.releaseJobToRecruiter(jobDoc, params);
+        params.released.forEach(newRelease => {
+            const exists = jobDoc.released.some(release => release.to.toString() === newRelease.to);
+            if (!exists) {
+                jobDoc.released.push(newRelease);
+            }
+        });
+        const jobData = await jobService.releaseJobToRecruiter(jobDoc);
 
         handleResponse.handleSuccessResponse(
             res,
